@@ -1,4 +1,4 @@
-from linalg import Vector
+from linalg import Vector, CVector
 import unittest
 import numpy as np
 
@@ -112,6 +112,28 @@ class TestVectorMethods(unittest.TestCase):
         v = Vector(range(5))
         self.assertTrue(-v == -1*v)
         self.assertTrue(--v == v)
+
+
+class TestCVectorMethods(unittest.TestCase):
+
+    def test_init(self):
+        with self.assertRaises(TypeError):
+            v = CVector(3)
+        with self.assertRaises(ValueError):
+            v = CVector([1, 2, '3'])
+        with self.assertRaises(ValueError):
+            v = CVector([[1, 2], [3, 4]])
+        v = CVector([complex(x, x**2) for x in range(5)])
+        self.assertTrue(all(v.data == [complex(x, x**2) for x in range(5)]))
+
+    def test_CC(self):
+        u = CVector(range(5))*1j
+        self.assertEqual(u.CC(), -u)
+
+    def test_dot(self):
+        u = CVector(range(3))*1j
+        v = CVector(range(3))*1j
+        self.assertTrue(u.dot(v) == 5)
 
 if __name__ == '__main__':
     unittest.main()

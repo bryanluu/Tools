@@ -166,3 +166,79 @@ class Vector:
         return repr(self.data)
 
 
+'''
+Implements an N-dimensional vector of complex numbers.
+'''
+class CVector(Vector):
+    def __init__(self, data):
+        try:
+            iter(data)
+        except TypeError as te:
+            raise TypeError('Invalid iterable data')
+
+
+        if all(isinstance(x, Number) for x in data):
+            arr = np.array([complex(x) for x in data])
+        else:
+            raise ValueError('Invalid numeric data')
+
+        if arr.ndim != 1:
+            raise ValueError('Too many array dimensions')
+
+        self.data = arr
+
+    def __add__(self, other):
+        return CVector(Vector(self.data) + other)
+
+    def __sub__(self, other):
+        return CVector(Vector(self.data) - other)
+
+    def __mul__(self, other):
+        return CVector(Vector(self.data) * other)
+
+    def __div__(self, other):
+        return CVector(Vector(self.data)/other)
+
+    def __neg__(self):
+        return CVector(-(self.data))
+
+    def __rmul__(self, other):
+        return CVector(other*(self.data))
+
+    def __iter__(self):
+        return self.data
+
+    def __getitem__(self, key):
+        return self.data.__getitem__(key)
+
+    def __eq__(self, other):
+        if isinstance(other, Vector):
+            return all(self.data == other.data)
+        elif isinstance(other, list):
+            if len(other) != len(self.data):
+                return False
+            return all(x == y for (x, y) in zip(self.data, other))
+        else:
+            return False
+
+    '''
+    Returns a deep copy of the vector
+    '''
+    def copy(self):
+        return CVector(self.data.copy())
+
+    @staticmethod
+    def zeros(n):
+        return CVector(np.zeros(n))
+
+    '''
+    Returns a complex conjugate version of the vector
+    '''
+    def CC(self):
+        return CVector(np.conj(self.data))
+
+    '''
+    Do an inner product in complex vector (Hilbert) space
+    '''
+    def dot(self, other):
+        return Vector.dot(self.CC(), other)
