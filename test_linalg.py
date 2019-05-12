@@ -1,6 +1,7 @@
-from linalg import Vector, CVector
+from linalg import Vector, CVector, Vector2D
 import unittest
 import numpy as np
+import math
 
 class TestVectorMethods(unittest.TestCase):
 
@@ -17,7 +18,7 @@ class TestVectorMethods(unittest.TestCase):
     def test_iter(self):
         v = Vector(range(5))
         a = [x for x in v]
-        self.assertTrue(a == range(5))
+        self.assertTrue(a == list(range(5)))
 
     def test_equal(self):
         a = list(range(5))
@@ -113,6 +114,12 @@ class TestVectorMethods(unittest.TestCase):
         self.assertTrue(-v == -1*v)
         self.assertTrue(--v == v)
 
+    def test_abs(self):
+        u = Vector([3, 4])
+        self.assertEqual(abs(u), 5)
+        self.assertEqual(abs(-u), 5)
+
+
 
 class TestCVectorMethods(unittest.TestCase):
 
@@ -134,6 +141,186 @@ class TestCVectorMethods(unittest.TestCase):
         u = CVector(range(3))*1j
         v = CVector(range(3))*1j
         self.assertTrue(u.dot(v) == 5)
+
+
+class TestVector2DMethods(unittest.TestCase):
+
+    def setUp(self):
+        # Vectors in each quadrant
+        # Q1 is top right: x>0, y>0, and goes counter clockwise
+        self.vectorQ1 = Vector2D(3, 4)
+        self.vectorQ2 = Vector2D(-3, 4)
+        self.vectorQ3 = Vector2D(-1, -1)
+        self.vectorQ4 = Vector2D(6, -8)
+        self.vectors = [
+            self.vectorQ1, self.vectorQ2, self.vectorQ3, self.vectorQ4]
+
+    def test_init(self):
+        with self.assertRaises(TypeError):
+            v = Vector2D(1,2,3)
+        with self.assertRaises(TypeError):
+            v = Vector2D([1,2,3])
+        with self.assertRaises(ValueError):
+            v = Vector2D(3, 'a')
+        v = Vector2D(3, 4)
+        self.assertTrue(v == [3, 4])
+
+    def testAdditionToZero(self):
+        for vector in self.vectors:
+            actual = vector + Vector2D.zero()
+            expected = vector
+            self.assertEqual(actual, expected)
+
+    def testAddition(self):
+        actual = self.vectorQ1 + self.vectorQ2
+        expected = Vector2D(0, 8)
+        self.assertEqual(actual, expected)
+
+        actual = self.vectorQ1 + 3
+        expected = Vector2D(6, 7)
+        self.assertEqual(actual, expected)
+
+    def testAdditionToSelf(self):
+        actual = Vector2D.zero()
+        actual += self.vectorQ1
+        expected = Vector2D(3, 4)
+        self.assertEqual(actual, expected)
+
+        actual = Vector2D(3, 4)
+        actual += 3
+        expected = Vector2D(6, 7)
+        self.assertEqual(actual, expected)
+
+    def testSubtraction(self):
+        actual = self.vectorQ1 - self.vectorQ2
+        expected = Vector2D(6, 0)
+        self.assertEqual(actual, expected)
+
+        actual = self.vectorQ1 - 3
+        expected = Vector2D(0, 1)
+        self.assertEqual(actual, expected)
+
+    def testSubtractionToSelf(self):
+        actual = Vector2D.zero()
+        actual -= self.vectorQ1
+        expected = Vector2D(-3, -4)
+        self.assertEqual(actual, expected)
+
+        actual = Vector2D(3, 4)
+        actual -= 3
+        expected = Vector2D(0, 1)
+        self.assertEqual(actual, expected)
+
+    def testScalarMultiplication(self):
+        actual = self.vectorQ1 * 2
+        expected = Vector2D(6, 8)
+        self.assertEqual(actual, expected)
+
+        actual = 2 * self.vectorQ1
+        self.assertEqual(actual, expected)
+
+    def testScalarDivision(self):
+        actual = self.vectorQ1 / 2
+        expected = Vector2D(1.5, 2)
+        self.assertEqual(actual, expected)
+
+    def testDotProduct(self):
+        actual = self.vectorQ1.dot(self.vectorQ2)
+        expected = 7
+        self.assertEqual(actual, expected)
+
+    def testCopy(self):
+        actual = self.vectorQ1.copy()
+        actual += 3
+        expected = Vector2D(6, 7)
+        self.assertEqual(actual, expected)
+        self.assertNotEqual(actual, self.vectorQ1)
+
+    def testAngles(self):
+        north = Vector2D(0, 1)
+        south = Vector2D(0, -1)
+        west = Vector2D(-1, 0)
+        east = Vector2D(1, 0)
+        northeast = Vector2D(1, 1)
+        northwest = Vector2D(-1, 1)
+        southeast = Vector2D(1, -1)
+        southwest = Vector2D(-1, -1)
+
+        specialTriangle = Vector2D.create_from_angle(math.pi/6, 2)
+
+        self.assertEqual(north.angle(), math.pi/2)
+        self.assertEqual(south.angle(), -math.pi/2)
+        self.assertEqual(west.angle(), math.pi)
+        self.assertEqual(east.angle(), 0)
+
+        self.assertAlmostEqual(northeast.angle(), math.pi/4, delta=0.01)
+        self.assertAlmostEqual(northwest.angle(), 3*math.pi/4, delta=0.01)
+        self.assertAlmostEqual(southeast.angle(), -math.pi/4, delta=0.01)
+        self.assertAlmostEqual(southwest.angle(), -3*math.pi/4, delta=0.01)
+
+        self.assertAlmostEqual(specialTriangle.angle(), math.pi/6, delta=0.01)
+
+    def testAngleBetween(self):
+        north = Vector2D(0, 1)
+        south = Vector2D(0, -1)
+        west = Vector2D(-1, 0)
+        east = Vector2D(1, 0)
+        northeast = Vector2D(1, 1)
+        northwest = Vector2D(-1, 1)
+        southeast = Vector2D(1, -1)
+        southwest = Vector2D(-1, -1)
+
+        self.assertAlmostEqual(
+            Vector2D.angle_between(north, south), math.pi)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(east, west), math.pi)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(north, east), -math.pi/2)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(north, west), math.pi/2)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southeast, south), -math.pi/4)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southeast, northeast), math.pi/2)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southeast, northwest), math.pi, places=5)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southeast, west), -3*math.pi/4)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southwest, north), -3*math.pi/4)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southwest, southeast), math.pi/2)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southwest, west), -math.pi/4)
+        self.assertAlmostEqual(
+            Vector2D.angle_between(southwest, southwest), 0, 5)
+
+    def testCreateFromAngle(self):
+        specialTriangle30 = Vector2D.create_from_angle(math.pi/6, 2)
+        specialTriangle60 = Vector2D.create_from_angle(math.pi/3, 2)
+        specialTriangle45 = Vector2D.create_from_angle(
+            math.pi/4, math.sqrt(2))
+
+        self.assertAlmostEqual(specialTriangle30.X(), math.sqrt(3))
+        self.assertAlmostEqual(specialTriangle30.Y(), 1)
+
+        self.assertAlmostEqual(specialTriangle60.X(), 1)
+        self.assertAlmostEqual(specialTriangle60.Y(), math.sqrt(3))
+
+        self.assertAlmostEqual(specialTriangle45.X(), 1)
+        self.assertAlmostEqual(specialTriangle45.Y(), 1)
+
+    # Also checks for immutability
+    def tearDown(self):
+        self.assertTrue(self.vectorQ1 == Vector2D(3, 4))
+        self.assertTrue(self.vectorQ2 == Vector2D(-3, 4))
+        self.assertTrue(self.vectorQ3 == Vector2D(-1, -1))
+        self.assertTrue(self.vectorQ4 == Vector2D(6, -8))
+        self.assertTrue(self.vectorQ1 == [3, 4])
+        self.assertTrue(self.vectorQ2 == [-3, 4])
+        self.assertTrue(self.vectorQ3 == [-1, -1])
+        self.assertTrue(self.vectorQ4 == [6, -8])
+
 
 if __name__ == '__main__':
     unittest.main()
