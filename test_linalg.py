@@ -14,6 +14,7 @@ class TestVectorMethods(unittest.TestCase):
             v = Vector([[1, 2], [3, 4]])
         v = Vector([x**2 for x in range(5)])
         self.assertTrue(all(v.data == [x**2 for x in range(5)]))
+        self.assertTrue(v.ndim == 5)
 
     def test_iter(self):
         v = Vector(range(5))
@@ -301,14 +302,20 @@ class TestVector2DMethods(unittest.TestCase):
         specialTriangle45 = Vector2D.create_from_angle(
             math.pi/4, math.sqrt(2))
 
-        self.assertAlmostEqual(specialTriangle30.X(), math.sqrt(3))
-        self.assertAlmostEqual(specialTriangle30.Y(), 1)
+        self.assertAlmostEqual(specialTriangle30.X, math.sqrt(3))
+        self.assertAlmostEqual(specialTriangle30.Y, 1)
 
-        self.assertAlmostEqual(specialTriangle60.X(), 1)
-        self.assertAlmostEqual(specialTriangle60.Y(), math.sqrt(3))
+        self.assertAlmostEqual(specialTriangle60.X, 1)
+        self.assertAlmostEqual(specialTriangle60.Y, math.sqrt(3))
 
-        self.assertAlmostEqual(specialTriangle45.X(), 1)
-        self.assertAlmostEqual(specialTriangle45.Y(), 1)
+        self.assertAlmostEqual(specialTriangle45.X, 1)
+        self.assertAlmostEqual(specialTriangle45.Y, 1)
+
+    def testLength(self):
+        u = Vector2D(3,4)
+        v = Vector2D(-5, 12)
+        self.assertEqual(abs(u), 5)
+        self.assertEqual(abs(v), 13)
 
     # Also checks for immutability
     def tearDown(self):

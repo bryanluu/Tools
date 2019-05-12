@@ -166,8 +166,18 @@ class Vector:
     def __repr__(self):
         return repr(self.data)
 
+    '''
+    Returns the H2 norm of the vector
+    '''
     def __abs__(self):
         return np.sqrt(self.dot(self))
+
+    '''
+    Returns the dimensionality of the vector
+    '''
+    @property
+    def ndim(self):
+        return len(self.data)
 
 
 
@@ -242,7 +252,7 @@ class Vector2D(Vector):
             super().__init__(args)
         elif n == 1:
             if isinstance(args[0], Vector):
-                if len(args[0].data) != 2:
+                if len(args[0]) != 2:
                     raise ValueError('Only 2 dimensions are allowed')
             elif len(args[0]) != 2:
                 raise TypeError('Only 2 dimensions are allowed')
@@ -269,12 +279,15 @@ class Vector2D(Vector):
     def __rmul__(self, other):
         return Vector2D(other*(self.data))
 
+    @property
     def X(self):
         return self.data[0]
 
+    @property
     def Y(self):
         return self.data[1]
 
+    @property
     def XY(self):
         return (self.data[0], self.data[1])
 
@@ -282,7 +295,7 @@ class Vector2D(Vector):
         """
         Returns the angle, measured as 0 radians from x-axis, in radians
         """
-        x, y = self.XY()
+        x, y = self.XY
 
         if x == 0:
             return math.pi/2 if y > 0 else -math.pi/2
