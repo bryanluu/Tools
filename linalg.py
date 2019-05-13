@@ -360,3 +360,76 @@ class Vector2D(Vector):
             else:
                 return -angle
 
+
+'''
+Implements an 3-dimensional vector of real numbers.
+'''
+class Vector3D(Vector):
+    def __init__(self, *args):
+        n = len(args)
+        if n == 3:
+            super().__init__(args)
+        elif n == 1:
+            if isinstance(args[0], Vector):
+                if len(args[0]) != 3:
+                    raise ValueError('Only 3 dimensions are allowed')
+            elif len(args[0]) != 3:
+                raise TypeError('Only 3 dimensions are allowed')
+            super().__init__(args[0])
+        else:
+            raise TypeError('Only 3 dimensions are allowed')
+
+
+    def __add__(self, other):
+        return Vector3D(super().__add__(other).data)
+
+    def __sub__(self, other):
+        return Vector3D(super().__sub__(other).data)
+
+    def __mul__(self, other):
+        return Vector3D(super().__mul__(other).data)
+
+    def __truediv__(self, other):
+        return Vector3D(super().__truediv__(other).data)
+
+    def __neg__(self):
+        return Vector3D(-(self.data))
+
+    def __rmul__(self, other):
+        return Vector3D(other*(self.data))
+
+    @property
+    def X(self):
+        return self.data[0]
+
+    @property
+    def Y(self):
+        return self.data[1]
+
+    @property
+    def Z(self):
+        return self.data[2]
+
+    @property
+    def XYZ(self):
+        return (self.data[0], self.data[1], self.data[2])
+
+
+    '''
+    Returns a deep copy of the vector
+    '''
+    def copy(self):
+        return Vector3D(self.data.copy())
+
+    @staticmethod
+    def zero():
+        return Vector3D(np.zeros(3))
+
+    '''
+    Returns vector cross product
+    '''
+    def cross(self, other):
+        if isinstance(other, Vector3D):
+            return Vector3D(np.cross(self.data, other.data))
+        else:
+            raise TypeError("Other must be a Vector3D")

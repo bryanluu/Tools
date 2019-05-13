@@ -1,4 +1,4 @@
-from linalg import Vector, CVector, Vector2D
+from linalg import Vector, CVector, Vector2D, Vector3D
 import unittest
 import numpy as np
 import math
@@ -327,6 +327,112 @@ class TestVector2DMethods(unittest.TestCase):
         self.assertTrue(self.vectorQ2 == [-3, 4])
         self.assertTrue(self.vectorQ3 == [-1, -1])
         self.assertTrue(self.vectorQ4 == [6, -8])
+
+
+class TestVector3D(unittest.TestCase):
+
+    def setUp(self):
+        # Vectors in each quadrant
+        # Q1 is top right: x>0, y>0, and goes counter clockwise
+        self.vectorQ1 = Vector3D(2, 3, 4)
+        self.vectorQ2 = Vector3D(2, -3, 4)
+        self.vectorQ3 = Vector3D(-2, -1, -1)
+        self.vectorQ4 = Vector3D(-4, 6, -8)
+        self.vectors = [
+            self.vectorQ1, self.vectorQ2, self.vectorQ3, self.vectorQ4]
+
+    def testAdditionToZero(self):
+        for vector in self.vectors:
+            actual = vector + Vector3D.zero()
+            expected = vector
+            self.assertEqual(actual, expected)
+
+    def testAddition(self):
+        actual = self.vectorQ1 + self.vectorQ2
+        expected = Vector3D(4, 0, 8)
+        self.assertEqual(actual, expected)
+
+        actual = self.vectorQ1 + 3
+        expected = Vector3D(5, 6, 7)
+        self.assertEqual(actual, expected)
+
+    def testAdditionToSelf(self):
+        actual = Vector3D.zero()
+        actual += self.vectorQ1
+        expected = Vector3D(2, 3, 4)
+        self.assertEqual(actual, expected)
+
+        actual = Vector3D(2, 3, 4)
+        actual += 3
+        expected = Vector3D(5, 6, 7)
+        self.assertEqual(actual, expected)
+
+    def testSubtraction(self):
+        actual = self.vectorQ1 - self.vectorQ2
+        expected = Vector3D(0, 6, 0)
+        self.assertEqual(actual, expected)
+
+        actual = self.vectorQ1 - 3
+        expected = Vector3D(-1, 0, 1)
+        self.assertEqual(actual, expected)
+
+    def testSubtractionToSelf(self):
+        actual = Vector3D.zero()
+        actual -= self.vectorQ1
+        expected = Vector3D(-2, -3, -4)
+        self.assertEqual(actual, expected)
+
+        actual = Vector3D(2, 3, 4)
+        actual -= 3
+        expected = Vector3D(-1, 0, 1)
+        self.assertEqual(actual, expected)
+
+    def testScalarMultiplication(self):
+        actual = self.vectorQ1 * 2
+        expected = Vector3D(4, 6, 8)
+        self.assertEqual(actual, expected)
+
+        actual = 2 * self.vectorQ1
+        self.assertEqual(actual, expected)
+
+    def testScalarDivision(self):
+        actual = self.vectorQ1 / 2
+        expected = Vector3D(1, 1.5, 2)
+        self.assertEqual(actual, expected)
+
+    def testLength(self):
+        actual = abs(self.vectorQ1)
+        expected = math.sqrt(2*2 + 3*3 + 4*4)
+        self.assertAlmostEqual(actual, expected)
+
+    def testDotProduct(self):
+        actual = self.vectorQ1.dot(self.vectorQ2)
+        expected = 11
+        self.assertEqual(actual, expected)
+
+    def testCrossProduct(self):
+        actual = Vector3D(1,0,0).cross(Vector3D(0,1,0))
+        expected = Vector3D(0,0,1)
+        self.assertEqual(actual, expected)
+
+        actual = Vector3D(0,1,0).cross(Vector3D(1,0,0))
+        expected = Vector3D(0,0,-1)
+        self.assertEqual(actual, expected)
+
+        actual = self.vectorQ1.cross(self.vectorQ2)
+        expected = Vector3D(24, 0, -12)
+        self.assertEqual(actual, expected)
+
+    # Also checks for immutability
+    def tearDown(self):
+        self.assertTrue(self.vectorQ1 == Vector3D(2, 3, 4))
+        self.assertTrue(self.vectorQ2 == Vector3D(2, -3, 4))
+        self.assertTrue(self.vectorQ3 == Vector3D(-2, -1, -1))
+        self.assertTrue(self.vectorQ4 == Vector3D(-4, 6, -8))
+        self.assertTrue(self.vectorQ1 == [2, 3, 4])
+        self.assertTrue(self.vectorQ2 == [2, -3, 4])
+        self.assertTrue(self.vectorQ3 == [-2, -1, -1])
+        self.assertTrue(self.vectorQ4 == [-4, 6, -8])
 
 
 if __name__ == '__main__':
