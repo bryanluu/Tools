@@ -291,6 +291,14 @@ class Vector2D(Vector):
     def XY(self):
         return (self.data[0], self.data[1])
 
+    @X.setter
+    def X(self, x):
+        self.data[0] = x
+
+    @Y.setter
+    def Y(self, y):
+        self.data[1] = y
+
     def angle(self):
         """
         Returns the angle, measured as 0 radians from x-axis, in radians
@@ -414,6 +422,71 @@ class Vector3D(Vector):
     def XYZ(self):
         return (self.data[0], self.data[1], self.data[2])
 
+    @X.setter
+    def X(self, x):
+        self.data[0] = x
+
+    @Y.setter
+    def Y(self, y):
+        self.data[1] = y
+
+    @Z.setter
+    def Z(self, z):
+        self.data[2] = z
+
+    '''
+    Gets spherical coordinates (physics standard) for the vector
+
+    r: radial distance from origin
+    theta: polar angle (0 to pi), where theta=0 in z-axis
+    phi: azimuthal angle (0 to 2pi), where phi=0 in x-axis
+    '''
+    def getSphericalCoords(self):
+        r = abs(self)
+        theta = math.acos(self.Z/r)
+        phi = math.atan2(self.Y, self.X)
+        return (r, theta, phi)
+
+    '''
+    Gets cylindrical coordinates for the vector
+
+    s: radial distance from origin
+    phi: azimuthal angle (0 to 2pi), where phi=0 in x-axis
+    z: height from origin
+    '''
+    def getCylindricalCoords(self):
+        s = math.sqrt(self.X**2 + self.Y**2)
+        phi = math.atan2(self.Y, self.X)
+        z = self.Z
+        return (s, phi, z)
+
+    '''
+    Creates a 3D vector using spherical coordinates (physics standard)
+
+    r: radial distance from origin
+    theta: polar angle (0 to pi), where theta=0 in z-axis
+    phi: azimuthal angle (0 to 2pi), where phi=0 in x-axis
+    '''
+    @staticmethod
+    def createSpherical(r, theta, phi):
+        x = r*math.sin(theta)*math.cos(phi)
+        y = r*math.sin(theta)*math.sin(phi)
+        z = r*math.cos(theta)
+        return Vector3D(x, y, z)
+
+    '''
+    Creates a 3D vector using cylindrical coordinates
+
+    s: radial distance from origin
+    phi: azimuthal angle (0 to 2pi), where phi=0 in x-axis
+    z: height from origin
+    '''
+    @staticmethod
+    def createCylindrical(s, phi, z):
+        x = s*math.cos(phi)
+        y = s*math.sin(phi)
+        z = z
+        return Vector3D(x, y, z)
 
     '''
     Returns a deep copy of the vector

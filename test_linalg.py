@@ -423,6 +423,40 @@ class TestVector3D(unittest.TestCase):
         expected = Vector3D(24, 0, -12)
         self.assertEqual(actual, expected)
 
+    def testSpherical(self):
+        # pointing in z-dir
+        actual = Vector3D.createSpherical(1, 0, 0)
+        expected = Vector3D(0,0,1)
+        self.assertEqual(actual, expected)
+
+        actual = Vector3D(1,0,0).getSphericalCoords()
+        expected = (1, math.pi/2, 0)
+        self.assertAlmostEqual(actual, expected)
+
+        # pointing in y-dir
+        actual = Vector3D.createSpherical(2, math.pi/2, math.pi/2)
+        expected = Vector3D(0,2,0)
+        self.assertAlmostEqual(actual, expected)
+
+        actual = Vector3D(0,2,0).getSphericalCoords()
+        expected = (2, math.pi/2, math.pi/2)
+        self.assertAlmostEqual(actual, expected)
+
+    def testCylindrical(self):
+        # pointing in z-dir
+        actual = Vector3D.createCylindrical(0, 0, 1)
+        expected = Vector3D(0,0,1)
+        self.assertEqual(actual, expected)
+
+        actual = Vector3D(0,3,0).getCylindricalCoords()
+        expected = (3, math.pi/2, 0)
+        self.assertEqual(actual, expected)
+
+        # pointing in y-dir
+        actual = Vector3D.createCylindrical(2, math.pi/2, 0)
+        expected = Vector3D(0,2,0)
+        self.assertAlmostEqual(actual, expected)
+
     # Also checks for immutability
     def tearDown(self):
         self.assertTrue(self.vectorQ1 == Vector3D(2, 3, 4))
