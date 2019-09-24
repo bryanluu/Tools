@@ -9,7 +9,7 @@ def execOp(op, *args):
         ans = sum(args)
     elif op == '-':
         ans -= sum(args[1:])
-    elif op == '*' or op == 'x':
+    elif op == 'x':
         for x in args[1:]:
             ans *= x
     elif op == '/':
@@ -18,6 +18,8 @@ def execOp(op, *args):
     elif op == '//':
         for x in args[1:]:
             ans //= x
+    elif not isOp(op):
+        raise TypeError("Invalid operator: " + op)
 
     return ans
 
@@ -26,15 +28,26 @@ def parseLine(tokens):
     args = (map(float, tokens[:-1]))
     return op, args
 
+def isOp(c):
+    return (c == '+' or c == '-' or c == 'x' or c == '/' or c == '//')
 
 if __name__ == "__main__":
-    tokens = []
+    stack = []
     if len(sys.argv) < 2:
         print("Enter RPN command:")
         line = input()
-        tokens = line.split()
+        stack = line.split()
     else:
-        tokens = sys.argv[1:]
-    op, args = parseLine(tokens)
-    ans = execOp(op, *args)
-    print(ans)
+        stack = (sys.argv[1:])
+    while(len(stack) > 1):
+        for i, c in enumerate(stack):
+            if isOp(c):
+                op, args = parseLine(stack[:i+1])
+                ans = execOp(op, *args)
+                del stack[:i]
+                stack[0] = ans
+                break
+            elif not c.isdigit():
+                raise TypeError("Invalid operator: " + c)
+
+    print(stack[0])
